@@ -1,0 +1,4 @@
+{
+  "log-level": "info",
+  "storage-driver": "{{ docker_storage_driver }}"
+}

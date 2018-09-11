@@ -1,0 +1,68 @@
+---
+- name: Creating docker group
+  group:
+    name: docker
+    state: present
+    system: yes
+
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - linux-image-extra-virtual
+
+- name: "Downloading docker binary"
+  unarchive:
+    src: "https://download.docker.com/linux/static/stable/x86_64/docker-{{ docker_version }}-ce.tgz"
+    dest: /opt/
+    remote_src: yes
+    owner: root
+    group: docker
+
+- name: "Copying docker binary"
+  shell: "{{ item }}"
+  with_items:
+    - rm -rf /usr/bin/docker*
+    - cp -r /opt/docker/* /usr/bin/
+
+- name: "Running check-config script"
+  shell: "bash /tmp/check-config.sh"
+  ignore_errors: yes
+  no_log: True
+
+- name: Service and Socket
+  get_url:
+    url: "{{ item }}"
+    dest: /lib/systemd/system/
+  with_items:
+    - "https://raw.githubusercontent.com/moby/moby/master/contrib/init/systemd/docker.service"
+    - "https://raw.githubusercontent.com/moby/moby/master/contrib/init/systemd/docker.socket"
+
+- name: Link Service and Socket
+  file:
+    src: "/lib/systemd/system/{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    state: link
+  with_items:
+    - "docker.service"
+    - "docker.socket"
+
+- name: Create /etc/docker
+  file:
+    path: '/etc/docker/'
+    state: directory
+    owner: root
+    group: root
+
+- name: Definindo /etc/docker/daemon.json com o registry interno
+  template:
+    src: "daemon.json"
+    dest: "/etc/docker/daemon.json"
+    mode: 0744
+  register: st_registry
+
+- name: "Enabling docker service"
+  service:
+    name: docker
+    enabled: yes

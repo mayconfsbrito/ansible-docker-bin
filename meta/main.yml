@@ -1,0 +1,15 @@
+galaxy_info:
+  author: mayconfsbrito
+  description: Role for Docker from Binary
+
+  license: license (GPLv2, CC-BY, etc)
+
+  min_ansible_version: 2
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - bionic
+  galaxy_tags: []
+
+dependencies: []
