@@ -1,5 +1,17 @@
 ---
-- hosts: localhost
-  remote_user: root
+- hosts: all
+
+  pre_tasks:
+  - name: Ensure build dependencies are installed (Debian)
+        package:
+          name: "{{ item }}"
+          state: present
+        with_items:
+          - build-essential
+          - unzip
+          - tar
+          - sudo
+        when: ansible_os_family == 'Debian'
+
   roles:
     - ansible-docker-bin
