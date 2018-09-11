@@ -11,6 +11,7 @@
     state: latest
   with_items:
     - linux-image-extra-virtual
+    - unzip
 
 - name: "Downloading docker binary"
   unarchive:
@@ -25,11 +26,6 @@
   with_items:
     - rm -rf /usr/bin/docker*
     - cp -r /opt/docker/* /usr/bin/
-
-- name: "Running check-config script"
-  shell: "bash /tmp/check-config.sh"
-  ignore_errors: yes
-  no_log: True
 
 - name: Service and Socket
   get_url:
@@ -66,3 +62,17 @@
   service:
     name: docker
     enabled: yes
+
+- stat:
+    path: '/usr/bin/docker-compose'
+  register: st_docker_compose
+
+- name: docker-compose download
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+    timeout: 360
+    dest: /usr/bin/docker-compose
+    mode: +x
+    owner: root
+    group: docker
+  when: st_docker_compose.stat.exists == false
