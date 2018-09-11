@@ -12,6 +12,7 @@ services:
 
 before_install:
   - 'sudo docker pull ${distribution}:${version}'
+  - 'echo sudo docker build --no-cache --rm --file=travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis'
   - 'sudo docker build --no-cache --rm --file=travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis'
 
 script:
