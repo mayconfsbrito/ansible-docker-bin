@@ -13,8 +13,12 @@ Role Variables
 
 A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml.
 
+Example:
+
 docker_storage_driver: "overlay2"
+
 docker_version: "17.03.2"
+
 docker_compose_version: "1.22.0"
 
 License
